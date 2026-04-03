@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Brain, Sparkles, Timer, SmilePlus, BarChart3, MessageCircle, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/Components/ui/button";
 import { motion } from "framer-motion";
 
 const features = [
