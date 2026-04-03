@@ -52,32 +52,41 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center py-8 md:py-12 lg:py-20 px-2"
-
+        className="text-center py-8 md:py-12 lg:py-16 px-2"
       >
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
           <Sparkles className="w-4 h-4" />
           AI-Powered Wellness
         </div>
-        <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold">
+
+        <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold mb-4">
           Your Mind,{" "}
           <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Reimagined
           </span>
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
           MindFlow combines AI therapy, mood tracking, focus tools, and deep insights
           to help you achieve peak mental wellness and productivity.
         </p>
-        <div className="flex items-center justify-center gap-3">
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link to="/dashboard">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 shadow-lg shadow-primary/25">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 shadow-lg shadow-primary/25"
+            >
               Get Started
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </Link>
           <Link to="/ai-chat">
-            <Button size="lg" variant="outline" className="border-border text-foreground hover:bg-secondary font-semibold px-6">
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full sm:w-auto border-border text-foreground hover:bg-secondary font-semibold px-6"
+            >
               Try AI Chat
             </Button>
           </Link>
@@ -89,13 +98,16 @@ export default function Home() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-12"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-12 px-1"
       >
         {features.map((feature) => (
           <motion.div key={feature.title} variants={item}>
+            {/* FIX: use Link instead of <a href> to prevent page reload / blank screen */}
             <Link to={feature.path}>
               <div className="group relative rounded-2xl border border-border bg-card p-6 hover:border-primary/30 transition-all duration-300 cursor-pointer">
-                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                <div
+                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                />
                 <div className="relative">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                     <feature.icon className="w-6 h-6 text-primary" />
@@ -103,9 +115,7 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-foreground mb-1">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {feature.description}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{feature.description}</p>
                   <div className="flex items-center gap-1 mt-4 text-primary text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                     Explore <ArrowRight className="w-3.5 h-3.5" />
                   </div>

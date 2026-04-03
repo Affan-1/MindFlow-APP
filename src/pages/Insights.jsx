@@ -13,8 +13,8 @@ const moodTrend = [
   { date: "Mar 29", score: 7 },
   { date: "Mar 30", score: 9 },
   { date: "Mar 31", score: 8 },
-  { date: "Apr 1", score: 8 },
-  { date: "Apr 2", score: 7 },
+  { date: "Apr 1",  score: 8 },
+  { date: "Apr 2",  score: 7 },
 ];
 
 const focusData = [
@@ -29,9 +29,9 @@ const focusData = [
 
 const moodDistribution = [
   { name: "Great", value: 35, color: "hsl(263 70% 58%)" },
-  { name: "Good", value: 40, color: "hsl(270 60% 68%)" },
-  { name: "Okay", value: 15, color: "hsl(220 12% 55%)" },
-  { name: "Bad", value: 10, color: "hsl(0 72% 51%)" },
+  { name: "Good",  value: 40, color: "hsl(270 60% 68%)" },
+  { name: "Okay",  value: 15, color: "hsl(220 12% 55%)" },
+  { name: "Bad",   value: 10, color: "hsl(0 72% 51%)" },
 ];
 
 const tooltipStyle = {
@@ -52,10 +52,34 @@ const item = {
 };
 
 const insights = [
-  { icon: TrendingUp, color: "text-emerald-400", title: "Improving Trend", text: "Your mood has improved 18% over the past week. Keep it up!" },
-  { icon: Brain, color: "text-primary", title: "Peak Focus", text: "You're most productive on Thursdays between 10am-12pm." },
-  { icon: Heart, color: "text-rose-400", title: "Self-care", text: "Days with meditation show 30% higher mood scores." },
-  { icon: Zap, color: "text-amber-400", title: "Energy Pattern", text: "Your energy peaks mid-week. Schedule tough tasks for Wed-Thu." },
+  {
+    icon: TrendingUp,
+    color: "text-emerald-400",
+    bg: "bg-emerald-400/10",
+    title: "Improving Trend",
+    text: "Your mood has improved 18% over the past week. Keep it up!",
+  },
+  {
+    icon: Brain,
+    color: "text-primary",
+    bg: "bg-primary/10",
+    title: "Peak Focus",
+    text: "You're most productive on Thursdays between 10am–12pm.",
+  },
+  {
+    icon: Heart,
+    color: "text-rose-400",
+    bg: "bg-rose-400/10",
+    title: "Self-care",
+    text: "Days with meditation show 30% higher mood scores.",
+  },
+  {
+    icon: Zap,
+    color: "text-amber-400",
+    bg: "bg-amber-400/10",
+    title: "Energy Pattern",
+    text: "Your energy peaks mid-week. Schedule tough tasks for Wed–Thu.",
+  },
 ];
 
 export default function Insights() {
@@ -64,42 +88,47 @@ export default function Insights() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="w-full max-w-6xl mx-auto px-4 py-6 space-y-5 sm:space-y-6"
+      className="w-full max-w-6xl mx-auto space-y-5 sm:space-y-6"
     >
       {/* Header */}
       <motion.div variants={item}>
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">Insights</h1>
-        <p className="text-muted-foreground text-xs sm:text-sm mt-1">AI-powered analysis of your wellness data</p>
+        <p className="text-muted-foreground text-xs sm:text-sm mt-1">
+          AI-powered analysis of your wellness data
+        </p>
       </motion.div>
 
-      {/* AI Insights Cards — 2 cols on mobile, 4 on lg */}
+      {/* AI Insight Cards — 1 col on mobile, 2 on sm, 4 on lg */}
       <motion.div
         variants={item}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
       >
         {insights.map((ins) => (
           <div
             key={ins.title}
-            className="rounded-xl border border-border bg-card p-3 sm:p-4 hover:border-primary/20 transition-colors"
+            className="rounded-xl border border-border bg-card p-4 hover:border-primary/20 transition-colors"
           >
-            <ins.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${ins.color} mb-2 sm:mb-3`} />
-            <h4 className="text-xs sm:text-sm font-semibold text-foreground leading-tight">{ins.title}</h4>
-            <p className="text-xs text-muted-foreground mt-1 leading-snug">{ins.text}</p>
+            <div className={`w-8 h-8 rounded-lg ${ins.bg} flex items-center justify-center mb-3`}>
+              <ins.icon className={`w-4 h-4 ${ins.color}`} />
+            </div>
+            <h4 className="text-sm font-semibold text-foreground leading-tight">{ins.title}</h4>
+            <p className="text-xs text-muted-foreground mt-1.5 leading-snug">{ins.text}</p>
           </div>
         ))}
       </motion.div>
 
-      {/* Charts Row — stacked on mobile, side-by-side on lg */}
+      {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Mood Trend */}
         <motion.div variants={item} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-3 sm:mb-4">
+          <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-4">
             Mood Trend (Last 9 Days)
           </h3>
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={moodTrend}>
               <defs>
                 <linearGradient id="moodGrad2" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(263 70% 58%)" stopOpacity={0.3} />
+                  <stop offset="5%"  stopColor="hsl(263 70% 58%)" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="hsl(263 70% 58%)" stopOpacity={0} />
                 </linearGradient>
               </defs>
@@ -123,8 +152,9 @@ export default function Insights() {
           </ResponsiveContainer>
         </motion.div>
 
+        {/* Focus Hours */}
         <motion.div variants={item} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-          <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-3 sm:mb-4">
+          <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-4">
             Focus Hours This Week
           </h3>
           <ResponsiveContainer width="100%" height={180}>
@@ -143,13 +173,16 @@ export default function Insights() {
         </motion.div>
       </div>
 
-      {/* Mood Distribution — pie stacks above legend on mobile */}
+      {/* Mood Distribution */}
       <motion.div variants={item} className="rounded-xl border border-border bg-card p-4 sm:p-5">
-        <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-3 sm:mb-4">
+        <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-4">
           Mood Distribution
         </h3>
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
-          <div className="w-full max-w-[180px] sm:max-w-none sm:w-[200px] flex-shrink-0">
+
+        {/* Stack on mobile, side-by-side on sm+ */}
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-8">
+          {/* Pie */}
+          <div className="w-full max-w-[180px] flex-shrink-0">
             <ResponsiveContainer width="100%" height={180}>
               <PieChart>
                 <Pie
@@ -169,20 +202,26 @@ export default function Insights() {
             </ResponsiveContainer>
           </div>
 
-          {/* Legend — 2-col grid on mobile */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:gap-4">
+          {/* Legend — 2 col grid on mobile, flex wrap on sm */}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-3 sm:flex sm:flex-col sm:gap-3">
             {moodDistribution.map((entry) => (
-              <div key={entry.name} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: entry.color }} />
+              <div key={entry.name} className="flex items-center gap-2.5">
+                <div
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ background: entry.color }}
+                />
                 <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                   {entry.name}{" "}
-                  <span className="text-foreground font-medium">{entry.value}%</span>
+                  <span className="text-foreground font-semibold">{entry.value}%</span>
                 </span>
               </div>
             ))}
           </div>
         </div>
       </motion.div>
+
+      {/* Safe area spacer */}
+      <div className="h-4 sm:h-0" />
     </motion.div>
   );
 }

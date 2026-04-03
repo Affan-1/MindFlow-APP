@@ -36,14 +36,8 @@ export default function Sidebar({ collapsed, onToggle }) {
 
   // Prevent body scroll when mobile drawer is open
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
   const NavContent = ({ isMobile = false }) => (
@@ -54,14 +48,15 @@ export default function Sidebar({ collapsed, onToggle }) {
         {isMobile && (
           <button
             onClick={() => setMobileOpen(false)}
-            className="text-muted-foreground hover:text-foreground p-1 rounded-lg"
+            className="text-muted-foreground hover:text-foreground p-1.5 rounded-lg hover:bg-secondary transition-colors"
+            aria-label="Close menu"
           >
             <X className="w-5 h-5" />
           </button>
         )}
       </div>
 
-      {/* Nav */}
+      {/* Nav — overflow-y-auto so it scrolls if many items */}
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -83,7 +78,9 @@ export default function Sidebar({ collapsed, onToggle }) {
                 className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")}
               />
               {/* On desktop respect collapsed; on mobile always show label */}
-              {(isMobile || !collapsed) && <span>{item.label}</span>}
+              {(isMobile || !collapsed) && (
+                <span className="truncate">{item.label}</span>
+              )}
             </Link>
           );
         })}
@@ -93,8 +90,16 @@ export default function Sidebar({ collapsed, onToggle }) {
       <div className="p-3 border-t border-border flex-shrink-0">
         <Link
           to="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-all duration-200"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 relative",
+            location.pathname === "/settings"
+              ? "bg-primary/10 text-primary"
+              : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          )}
         >
+          {location.pathname === "/settings" && (
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
+          )}
           <Settings className="w-5 h-5 flex-shrink-0" />
           {(isMobile || !collapsed) && <span>Settings</span>}
         </Link>

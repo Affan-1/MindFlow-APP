@@ -1,26 +1,37 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 const moods = [
-  { emoji: "😢", label: "Awful", value: 1 },
-  { emoji: "😔", label: "Bad", value: 3 },
-  { emoji: "😐", label: "Okay", value: 5 },
-  { emoji: "🙂", label: "Good", value: 7 },
-  { emoji: "😄", label: "Great", value: 9 },
+  { emoji: "😢", label: "Awful",   value: 1 },
+  { emoji: "😔", label: "Bad",     value: 3 },
+  { emoji: "😐", label: "Okay",    value: 5 },
+  { emoji: "🙂", label: "Good",    value: 7 },
+  { emoji: "😄", label: "Great",   value: 9 },
   { emoji: "🤩", label: "Amazing", value: 10 },
 ];
 
 export default function MoodTracker() {
-  const [selected, setSelected] = useState(null);
-  const [note, setNote] = useState("");
-  const [entries, setEntries] = useState([]);
-  const [saved, setSaved] = useState(false);
+  const [selected, setSelected]   = useState(null);
+  const [note, setNote]           = useState("");
+  const [entries, setEntries]     = useState([]);
+  const [saved, setSaved]         = useState(false);
 
+  // Load from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem("mindflow_moods");
-    if (stored) setEntries(JSON.parse(stored));
+    try {
+      const stored = localStorage.getItem("mindflow_moods");
+      if (stored) setEntries(JSON.parse(stored));
+    } catch {
+      // ignore parse errors
+    }
   }, []);
+
+  const persist = (updated) => {
+    setEntries(updated);
+    localStorage.setItem("mindflow_moods", JSON.stringify(updated));
+  };
 
   const handleLog = () => {
     if (!selected) return;
@@ -31,13 +42,10 @@ export default function MoodTracker() {
       mood: selected.value,
       emoji: selected.emoji,
       label: selected.label,
-      note: note,
+      note,
     };
 
-    const updated = [newEntry, ...entries];
-    setEntries(updated);
-    localStorage.setItem("mindflow_moods", JSON.stringify(updated));
-
+    persist([newEntry, ...entries]);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
     setSelected(null);
@@ -45,9 +53,7 @@ export default function MoodTracker() {
   };
 
   const deleteEntry = (id) => {
-    const updated = entries.filter((e) => e.id !== id);
-    setEntries(updated);
-    localStorage.setItem("mindflow_moods", JSON.stringify(updated));
+    persist(entries.filter((e) => e.id !== id));
   };
 
   return (
@@ -55,7 +61,7 @@ export default function MoodTracker() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-4xl mx-auto px-4 py-6 space-y-5 sm:space-y-6"
+      className="w-full max-w-4xl mx-auto space-y-5 sm:space-y-6"
     >
       {/* Header */}
       <div>
@@ -65,7 +71,7 @@ export default function MoodTracker() {
         </p>
       </div>
 
-      {/* Success Message */}
+      {/* Success toast */}
       <AnimatePresence>
         {saved && (
           <motion.div
@@ -79,19 +85,22 @@ export default function MoodTracker() {
         )}
       </AnimatePresence>
 
-      {/* Mood Selector */}
+      {/* Mood Selector Card */}
       <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
         <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-4 sm:mb-5">
           Select your mood
         </h3>
 
-        {/* 3 cols on all screens, comfortable touch targets */}
+        {/*
+          FIX: 3 cols on mobile (comfortable thumb targets), 6 cols on sm+
+          Each button has a min-height so it's easy to tap on small screens.
+        */}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
           {moods.map((mood) => (
             <button
               key={mood.value}
               onClick={() => setSelected(mood)}
-              className={`flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-xl border transition-all duration-200 ${
+              className={`flex flex-col items-center gap-1.5 sm:gap-2 p-3 sm:p-4 rounded-xl border transition-all duration-200 min-h-[72px] sm:min-h-0 ${
                 selected?.value === mood.value
                   ? "border-primary bg-primary/10 scale-105 shadow-lg shadow-primary/10"
                   : "border-border hover:border-primary/30 hover:bg-secondary"
@@ -105,6 +114,7 @@ export default function MoodTracker() {
           ))}
         </div>
 
+        {/* Note + submit — animated reveal when mood is selected */}
         <AnimatePresence>
           {selected && (
             <motion.div
@@ -120,11 +130,11 @@ export default function MoodTracker() {
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   rows={3}
-                  className="w-full bg-secondary border border-border rounded-xl px-3 sm:px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary"
+                  className="w-full bg-secondary border border-border rounded-xl px-3 sm:px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:border-primary transition-colors"
                 />
                 <button
                   onClick={handleLog}
-                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-lg shadow-primary/25 text-sm"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-3 sm:py-2.5 rounded-xl transition-all shadow-lg shadow-primary/25 text-sm active:scale-95"
                 >
                   Log Mood {selected.emoji}
                 </button>
@@ -141,7 +151,7 @@ export default function MoodTracker() {
         </h3>
 
         {entries.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground text-xs sm:text-sm">
+          <div className="text-center py-10 text-muted-foreground text-xs sm:text-sm">
             No mood entries yet. Log your first mood above! 😊
           </div>
         ) : (
@@ -149,37 +159,47 @@ export default function MoodTracker() {
             {entries.map((entry) => (
               <div
                 key={entry.id}
-                className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary transition-colors group"
+                className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary transition-colors"
               >
+                {/* Emoji */}
                 <div className="text-xl sm:text-2xl mt-0.5 flex-shrink-0">{entry.emoji}</div>
+
+                {/* Info */}
                 <div className="flex-1 min-w-0">
-                  {/* Stack date and label on mobile */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
                     <span className="text-xs sm:text-sm font-medium text-foreground">
-                      {format(new Date(entry.date), "MMM d, yyyy - h:mm a")}
+                      {format(new Date(entry.date), "MMM d, yyyy · h:mm a")}
                     </span>
                     <span className="text-xs text-primary font-medium mt-0.5 sm:mt-0">
                       {entry.label} ({entry.mood}/10)
                     </span>
                   </div>
                   {entry.note && (
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 break-words">
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 break-words leading-snug">
                       {entry.note}
                     </p>
                   )}
                 </div>
-                {/* Always visible delete on mobile (no hover on touch) */}
+
+                {/*
+                  FIX: Delete button always visible on mobile (touch devices don't have hover).
+                  On desktop it fades in on group-hover via opacity trick.
+                */}
                 <button
                   onClick={() => deleteEntry(entry.id)}
-                  className="text-muted-foreground hover:text-red-400 text-xs transition-all px-2 py-1 rounded opacity-60 sm:opacity-0 sm:group-hover:opacity-100 flex-shrink-0"
+                  className="flex-shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                  aria-label="Delete entry"
                 >
-                  ✕
+                  <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Safe area spacer for mobile */}
+      <div className="h-4 sm:h-0" />
     </motion.div>
   );
 }

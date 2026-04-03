@@ -1,7 +1,15 @@
+import { Link } from "react-router-dom";
 import { SmilePlus, Timer, Brain, TrendingUp, Flame, Target } from "lucide-react";
 import StatCard from "../Components/StateCard";
 import { motion } from "framer-motion";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const weekData = [
   { day: "Mon", mood: 7, focus: 5 },
@@ -32,15 +40,25 @@ const item = {
 
 export default function Dashboard() {
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl mx-auto space-y-6 p-2 md:p-6">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="max-w-4xl mx-auto space-y-6"
+    >
       {/* Header */}
       <motion.div variants={item}>
         <h1 className="text-2xl font-bold text-foreground">Good afternoon 👋</h1>
-        <p className="text-muted-foreground text-sm mt-1">Here's your wellness overview for today</p>
+        <p className="text-muted-foreground text-sm mt-1">
+          Here's your wellness overview for today
+        </p>
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div
+        variants={item}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+      >
         <StatCard icon={SmilePlus} label="Mood Score" value="8.2" change="+12%" changeType="positive" />
         <StatCard icon={Flame} label="Streak" value="7 days" change="+1" changeType="positive" />
         <StatCard icon={Timer} label="Focus Time" value="4.5h" change="+0.5h" changeType="positive" />
@@ -49,9 +67,13 @@ export default function Dashboard() {
 
       {/* Chart + Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <motion.div variants={item} className="lg:col-span-2 rounded-xl border border-border bg-card p-5">
+        {/* Area Chart */}
+        <motion.div
+          variants={item}
+          className="lg:col-span-2 rounded-xl border border-border bg-card p-5"
+        >
           <h3 className="text-sm font-semibold text-foreground mb-4">Weekly Overview</h3>
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={weekData}>
               <defs>
                 <linearGradient id="moodGrad" x1="0" y1="0" x2="0" y2="1">
@@ -63,7 +85,12 @@ export default function Dashboard() {
                   <stop offset="95%" stopColor="hsl(160 60% 45%)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "hsl(220 12% 55%)", fontSize: 12 }} />
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "hsl(220 12% 55%)", fontSize: 12 }}
+              />
               <YAxis hide domain={[0, 10]} />
               <Tooltip
                 contentStyle={{
@@ -74,8 +101,20 @@ export default function Dashboard() {
                   fontSize: 12,
                 }}
               />
-              <Area type="monotone" dataKey="mood" stroke="hsl(263 70% 58%)" fill="url(#moodGrad)" strokeWidth={2} />
-              <Area type="monotone" dataKey="focus" stroke="hsl(160 60% 45%)" fill="url(#focusGrad)" strokeWidth={2} />
+              <Area
+                type="monotone"
+                dataKey="mood"
+                stroke="hsl(263 70% 58%)"
+                fill="url(#moodGrad)"
+                strokeWidth={2}
+              />
+              <Area
+                type="monotone"
+                dataKey="focus"
+                stroke="hsl(160 60% 45%)"
+                fill="url(#focusGrad)"
+                strokeWidth={2}
+              />
             </AreaChart>
           </ResponsiveContainer>
           <div className="flex gap-4 mt-3">
@@ -88,20 +127,21 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
+        {/* Quick Actions — FIX: use Link instead of <a href> */}
         <motion.div variants={item} className="rounded-xl border border-border bg-card p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">Quick Actions</h3>
           <div className="space-y-2">
             {quickActions.map((action) => (
-              <a
+              <Link
                 key={action.label}
-                href={action.path}
+                to={action.path}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary transition-colors group"
               >
-                <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                  <action.icon className={`w-4.5 h-4.5 ${action.color}`} />
+                <div className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors flex-shrink-0">
+                  <action.icon className={`w-4 h-4 ${action.color}`} />
                 </div>
                 <span className="text-sm font-medium text-foreground">{action.label}</span>
-              </a>
+              </Link>
             ))}
           </div>
         </motion.div>

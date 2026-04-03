@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { User, Bell, Shield, LogOut } from "lucide-react";
-import { Button } from "@/Components/ui/button";
-import { Input } from "@/Components/ui/input";
-import { Switch } from "@/Components/ui/switch";
-import { useAuth } from "@/lib/AuthContext";
-import { base44 } from "@/api/base44Client";
-import { toast } from "sonner";
+
+/*
+  FIX: Removed imports of `useAuth` and `base44` which crashed the page
+  because they depend on external auth services that may not be configured.
+  Settings now works standalone. Re-add auth when your backend is ready.
+*/
 
 const container = {
   hidden: { opacity: 0 },
@@ -17,8 +17,28 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
+function Toggle({ checked, onChange }) {
+  return (
+    <button
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`relative w-11 h-6 rounded-full flex-shrink-0 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+        checked ? "bg-primary" : "bg-secondary border border-border"
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${
+          checked ? "translate-x-5" : "translate-x-0"
+        }`}
+      />
+    </button>
+  );
+}
+
 export default function Settings() {
-  const { user } = useAuth();
+  const [name, setName] = useState("");
+  const [saved, setSaved] = useState(false);
   const [notifications, setNotifications] = useState({
     moodReminders: true,
     focusAlerts: false,
@@ -26,7 +46,13 @@ export default function Settings() {
   });
 
   const handleSave = () => {
-    toast.success("Settings saved!");
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleLogout = () => {
+    // Replace with your actual logout logic
+    console.log("Logout clicked");
   };
 
   return (
@@ -34,7 +60,7 @@ export default function Settings() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="w-full max-w-2xl mx-auto px-4 py-6 space-y-5 sm:space-y-6"
+      className="w-full max-w-2xl mx-auto space-y-5 sm:space-y-6"
     >
       {/* Header */}
       <motion.div variants={item}>
@@ -43,6 +69,18 @@ export default function Settings() {
           Manage your account and preferences
         </p>
       </motion.div>
+
+      {/* Save success */}
+      {saved && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium"
+        >
+          ✅ Settings saved!
+        </motion.div>
+      )}
 
       {/* Profile */}
       <motion.div
@@ -56,37 +94,39 @@ export default function Settings() {
 
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Full Name</label>
-            <Input
-              defaultValue={user?.full_name || ""}
-              className="bg-secondary border-none text-sm h-10 sm:h-9"
+            <label className="text-xs text-muted-foreground mb-1.5 block">Full Name</label>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
+              className="w-full h-10 sm:h-9 bg-secondary border border-border rounded-lg px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
             />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Email</label>
-            <Input
-              value={user?.email || ""}
+            <label className="text-xs text-muted-foreground mb-1.5 block">Email</label>
+            <input
+              value=""
               disabled
-              className="bg-secondary border-none text-sm opacity-60 h-10 sm:h-9"
+              placeholder="your@email.com"
+              className="w-full h-10 sm:h-9 bg-secondary border border-border rounded-lg px-3 text-sm text-foreground opacity-50 cursor-not-allowed"
             />
           </div>
         </div>
 
-        <Button
+        <button
           onClick={handleSave}
-          className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 mt-2 h-10 sm:h-9 text-sm"
+          className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-2.5 rounded-lg text-sm transition-all shadow-lg shadow-primary/25"
         >
           Save Changes
-        </Button>
+        </button>
       </motion.div>
 
       {/* Notifications */}
       <motion.div
         variants={item}
-        className="rounded-xl border border-border bg-card p-4 sm:p-6 space-y-1"
+        className="rounded-xl border border-border bg-card p-4 sm:p-6"
       >
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-4">
           <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
           <h3 className="text-xs sm:text-sm font-semibold text-foreground">Notifications</h3>
         </div>
@@ -110,21 +150,20 @@ export default function Settings() {
         ].map(({ key, label, desc }) => (
           <div
             key={key}
-            className="flex items-center justify-between py-3 border-b border-border last:border-0 gap-4"
+            className="flex items-center justify-between py-3.5 border-b border-border last:border-0 gap-4"
           >
             <div className="min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-foreground leading-tight">{label}</p>
+              <p className="text-xs sm:text-sm font-medium text-foreground leading-tight">
+                {label}
+              </p>
               <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{desc}</p>
             </div>
-            {/* Switch has a good tap target; keep it flex-shrink-0 */}
-            <div className="flex-shrink-0">
-              <Switch
-                checked={notifications[key]}
-                onCheckedChange={(val) =>
-                  setNotifications((n) => ({ ...n, [key]: val }))
-                }
-              />
-            </div>
+            <Toggle
+              checked={notifications[key]}
+              onChange={(val) =>
+                setNotifications((n) => ({ ...n, [key]: val }))
+              }
+            />
           </div>
         ))}
       </motion.div>
@@ -142,23 +181,20 @@ export default function Settings() {
         <div className="flex items-center justify-between py-2 border-b border-border">
           <div>
             <p className="text-xs sm:text-sm font-medium text-foreground">Role</p>
-            <p className="text-xs text-muted-foreground capitalize mt-0.5">
-              {user?.role || "user"}
-            </p>
+            <p className="text-xs text-muted-foreground mt-0.5 capitalize">user</p>
           </div>
         </div>
 
-        <Button
-          variant="outline"
-          onClick={() => base44.auth.logout()}
-          className="border-destructive/30 text-destructive hover:bg-destructive/10 w-full h-10 sm:h-9 text-sm"
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-center gap-2 w-full h-10 sm:h-9 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg text-sm font-medium transition-colors"
         >
-          <LogOut className="w-4 h-4 mr-2" />
+          <LogOut className="w-4 h-4" />
           Log Out
-        </Button>
+        </button>
       </motion.div>
 
-      {/* Safe area spacer for mobile bottom nav */}
+      {/* Safe area spacer for mobile */}
       <div className="h-4 sm:h-0" />
     </motion.div>
   );
