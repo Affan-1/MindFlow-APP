@@ -1,0 +1,138 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Play, Pause, RotateCcw, Coffee, Brain } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+const MODES = [
+  { label: "Focus", duration: 25 * 60, icon: Brain, color: "primary" },
+  { label: "Short Break", duration: 5 * 60, icon: Coffee, color: "emerald-500" },
+  { label: "Long Break", duration: 15 * 60, icon: Coffee, color: "blue-500" },
+];
+
+export default function FocusTimer() {
+  const [modeIndex, setModeIndex] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(MODES[0].duration);
+  const [running, setRunning] = useState(false);
+  const [sessions, setSessions] = useState(0);
+  const intervalRef = useRef(null);
+
+  const mode = MODES[modeIndex];
+  const progress = 1 - timeLeft / mode.duration;
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
+  useEffect(() => {
+    if (running && timeLeft > 0) {
+      intervalRef.current = setInterval(() => {
+        setTimeLeft((t) => t - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      setRunning(false);
+      if (modeIndex === 0) setSessions((s) => s + 1);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [running, timeLeft, modeIndex]);
+
+  const switchMode = useCallback((idx) => {
+    setModeIndex(idx);
+    setTimeLeft(MODES[idx].duration);
+    setRunning(false);
+  }, []);
+
+  const reset = useCallback(() => {
+    setTimeLeft(mode.duration);
+    setRunning(false);
+  }, [mode.duration]);
+
+  const circumference = 2 * Math.PI * 140;
+  const strokeDashoffset = circumference * (1 - progress);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="max-w-2xl mx-auto space-y-8"
+    >
+      <div>
+        <h1 className="text-2xl font-bold text-foreground">Focus Timer</h1>
+        <p className="text-muted-foreground text-sm mt-1">Stay productive with Pomodoro sessions</p>
+      </div>
+
+      {/* Mode Tabs */}
+      <div className="flex gap-2 justify-center">
+        {MODES.map((m, i) => (
+          <button
+            key={m.label}
+            onClick={() => switchMode(i)}
+            className={cn(
+              "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+              modeIndex === i
+                ? "bg-primary/10 text-primary border border-primary/30"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+            )}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Timer Circle */}
+      <div className="flex flex-col items-center">
+        <div className="relative w-72 h-72 sm:w-80 sm:h-80">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 300 300">
+            <circle
+              cx="150" cy="150" r="140"
+              fill="none"
+              stroke="hsl(220 16% 14%)"
+              strokeWidth="6"
+            />
+            <circle
+              cx="150" cy="150" r="140"
+              fill="none"
+              stroke="hsl(263 70% 58%)"
+              strokeWidth="6"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              className="transition-all duration-1000 ease-linear"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-6xl sm:text-7xl font-bold tracking-tight text-foreground tabular-nums">
+              {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+            </span>
+            <span className="text-sm text-muted-foreground mt-2">{mode.label}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center justify-center gap-3">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={reset}
+          className="w-12 h-12 rounded-full border-border"
+        >
+          <RotateCcw className="w-5 h-5" />
+        </Button>
+        <Button
+          onClick={() => setRunning(!running)}
+          className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/30"
+        >
+          {running ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
+        </Button>
+        <div className="w-12 h-12" /> {/* Spacer for symmetry */}
+      </div>
+
+      {/* Session count */}
+      <div className="text-center">
+        <p className="text-sm text-muted-foreground">
+          Sessions completed today: <span className="text-primary font-semibold">{sessions}</span>
+        </p>
+      </div>
+    </motion.div>
+  );
+}
