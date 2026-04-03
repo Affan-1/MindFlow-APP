@@ -60,28 +60,42 @@ const insights = [
 
 export default function Insights() {
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="max-w-6xl mx-auto space-y-6">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="w-full max-w-6xl mx-auto px-4 py-6 space-y-5 sm:space-y-6"
+    >
+      {/* Header */}
       <motion.div variants={item}>
-        <h1 className="text-2xl font-bold text-foreground">Insights</h1>
-        <p className="text-muted-foreground text-sm mt-1">AI-powered analysis of your wellness data</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Insights</h1>
+        <p className="text-muted-foreground text-xs sm:text-sm mt-1">AI-powered analysis of your wellness data</p>
       </motion.div>
 
-      {/* AI Insights Cards */}
-      <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* AI Insights Cards — 2 cols on mobile, 4 on lg */}
+      <motion.div
+        variants={item}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+      >
         {insights.map((ins) => (
-          <div key={ins.title} className="rounded-xl border border-border bg-card p-4 hover:border-primary/20 transition-colors">
-            <ins.icon className={`w-5 h-5 ${ins.color} mb-3`} />
-            <h4 className="text-sm font-semibold text-foreground">{ins.title}</h4>
-            <p className="text-xs text-muted-foreground mt-1">{ins.text}</p>
+          <div
+            key={ins.title}
+            className="rounded-xl border border-border bg-card p-3 sm:p-4 hover:border-primary/20 transition-colors"
+          >
+            <ins.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${ins.color} mb-2 sm:mb-3`} />
+            <h4 className="text-xs sm:text-sm font-semibold text-foreground leading-tight">{ins.title}</h4>
+            <p className="text-xs text-muted-foreground mt-1 leading-snug">{ins.text}</p>
           </div>
         ))}
       </motion.div>
 
-      {/* Charts Row */}
+      {/* Charts Row — stacked on mobile, side-by-side on lg */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div variants={item} className="rounded-xl border border-border bg-card p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Mood Trend (Last 9 Days)</h3>
-          <ResponsiveContainer width="100%" height={220}>
+        <motion.div variants={item} className="rounded-xl border border-border bg-card p-4 sm:p-5">
+          <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-3 sm:mb-4">
+            Mood Trend (Last 9 Days)
+          </h3>
+          <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={moodTrend}>
               <defs>
                 <linearGradient id="moodGrad2" x1="0" y1="0" x2="0" y2="1">
@@ -89,19 +103,38 @@ export default function Insights() {
                   <stop offset="95%" stopColor="hsl(263 70% 58%)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: "hsl(220 12% 55%)", fontSize: 11 }} />
+              <XAxis
+                dataKey="date"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "hsl(220 12% 55%)", fontSize: 10 }}
+                interval="preserveStartEnd"
+              />
               <YAxis hide domain={[0, 10]} />
               <Tooltip contentStyle={tooltipStyle} />
-              <Area type="monotone" dataKey="score" stroke="hsl(263 70% 58%)" fill="url(#moodGrad2)" strokeWidth={2} />
+              <Area
+                type="monotone"
+                dataKey="score"
+                stroke="hsl(263 70% 58%)"
+                fill="url(#moodGrad2)"
+                strokeWidth={2}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </motion.div>
 
-        <motion.div variants={item} className="rounded-xl border border-border bg-card p-5">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Focus Hours This Week</h3>
-          <ResponsiveContainer width="100%" height={220}>
+        <motion.div variants={item} className="rounded-xl border border-border bg-card p-4 sm:p-5">
+          <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-3 sm:mb-4">
+            Focus Hours This Week
+          </h3>
+          <ResponsiveContainer width="100%" height={180}>
             <BarChart data={focusData}>
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "hsl(220 12% 55%)", fontSize: 11 }} />
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "hsl(220 12% 55%)", fontSize: 10 }}
+              />
               <YAxis hide />
               <Tooltip contentStyle={tooltipStyle} />
               <Bar dataKey="hours" fill="hsl(263 70% 58%)" radius={[6, 6, 0, 0]} />
@@ -110,33 +143,40 @@ export default function Insights() {
         </motion.div>
       </div>
 
-      {/* Mood Distribution */}
-      <motion.div variants={item} className="rounded-xl border border-border bg-card p-5">
-        <h3 className="text-sm font-semibold text-foreground mb-4">Mood Distribution</h3>
-        <div className="flex flex-col sm:flex-row items-center gap-6">
-          <ResponsiveContainer width={200} height={200}>
-            <PieChart>
-              <Pie
-                data={moodDistribution}
-                cx="50%"
-                cy="50%"
-                innerRadius={55}
-                outerRadius={85}
-                paddingAngle={4}
-                dataKey="value"
-              >
-                {moodDistribution.map((entry, index) => (
-                  <Cell key={index} fill={entry.color} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="flex flex-wrap gap-4">
+      {/* Mood Distribution — pie stacks above legend on mobile */}
+      <motion.div variants={item} className="rounded-xl border border-border bg-card p-4 sm:p-5">
+        <h3 className="text-xs sm:text-sm font-semibold text-foreground mb-3 sm:mb-4">
+          Mood Distribution
+        </h3>
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+          <div className="w-full max-w-[180px] sm:max-w-none sm:w-[200px] flex-shrink-0">
+            <ResponsiveContainer width="100%" height={180}>
+              <PieChart>
+                <Pie
+                  data={moodDistribution}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={75}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  {moodDistribution.map((entry, index) => (
+                    <Cell key={index} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Legend — 2-col grid on mobile */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:gap-4">
             {moodDistribution.map((entry) => (
               <div key={entry.name} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ background: entry.color }} />
-                <span className="text-sm text-muted-foreground">
-                  {entry.name} <span className="text-foreground font-medium">{entry.value}%</span>
+                <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: entry.color }} />
+                <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                  {entry.name}{" "}
+                  <span className="text-foreground font-medium">{entry.value}%</span>
                 </span>
               </div>
             ))}

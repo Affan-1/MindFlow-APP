@@ -53,21 +53,22 @@ export default function FocusTimer() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="max-w-2xl mx-auto space-y-8"
+      className="w-full max-w-2xl mx-auto px-4 py-6 space-y-6 sm:space-y-8"
     >
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Focus Timer</h1>
-        <p className="text-muted-foreground text-sm mt-1">Stay productive with Pomodoro sessions</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">Focus Timer</h1>
+        <p className="text-muted-foreground text-xs sm:text-sm mt-1">Stay productive with Pomodoro sessions</p>
       </div>
 
-      {/* Mode Tabs */}
-      <div className="flex gap-2 justify-center">
+      {/* Mode Tabs — scrollable on very small screens */}
+      <div className="flex gap-2 justify-center flex-wrap">
         {MODES.map((m, i) => (
           <button
             key={m.label}
             onClick={() => switchMode(i)}
             className={cn(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+              "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all",
               modeIndex === i
                 ? "bg-primary/10 text-primary border border-primary/30"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -78,9 +79,9 @@ export default function FocusTimer() {
         ))}
       </div>
 
-      {/* Timer Circle */}
+      {/* Timer Circle — scales fluidly */}
       <div className="flex flex-col items-center">
-        <div className="relative w-72 h-72 sm:w-80 sm:h-80">
+        <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 300 300">
             <circle
               cx="150" cy="150" r="140"
@@ -100,37 +101,38 @@ export default function FocusTimer() {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-6xl sm:text-7xl font-bold tracking-tight text-foreground tabular-nums">
+            <span className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-foreground tabular-nums">
               {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
             </span>
-            <span className="text-sm text-muted-foreground mt-2">{mode.label}</span>
+            <span className="text-xs sm:text-sm text-muted-foreground mt-2">{mode.label}</span>
           </div>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-center gap-3">
+      <div className="flex items-center justify-center gap-3 sm:gap-4">
         <Button
           variant="outline"
           size="icon"
           onClick={reset}
-          className="w-12 h-12 rounded-full border-border"
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border-border"
         >
-          <RotateCcw className="w-5 h-5" />
+          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
         </Button>
         <Button
           onClick={() => setRunning(!running)}
-          className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/30"
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/30"
         >
-          {running ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-0.5" />}
+          {running ? <Pause className="w-5 h-5 sm:w-6 sm:h-6" /> : <Play className="w-5 h-5 sm:w-6 sm:h-6 ml-0.5" />}
         </Button>
-        <div className="w-12 h-12" /> {/* Spacer for symmetry */}
+        <div className="w-11 h-11 sm:w-12 sm:h-12" />
       </div>
 
       {/* Session count */}
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground">
-          Sessions completed today: <span className="text-primary font-semibold">{sessions}</span>
+      <div className="text-center pb-2">
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Sessions completed today:{" "}
+          <span className="text-primary font-semibold">{sessions}</span>
         </p>
       </div>
     </motion.div>

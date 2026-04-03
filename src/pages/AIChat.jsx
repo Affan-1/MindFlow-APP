@@ -18,7 +18,6 @@ export default function AIChat() {
     setMessages(prev => [...prev, { id: Date.now(), role: "user", text: msg }]);
     setInput("");
     setTyping(true);
-
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -30,31 +29,28 @@ export default function AIChat() {
           model: "llama3-8b-8192",
           max_tokens: 200,
           messages: [
-            { role: "system", content: "You are MindFlow AI, a mental wellness companion. Respond specifically to what the user says in 2-3 sentences. Use 1 emoji." },
+            { role: "system", content: "You are MindFlow AI, a mental wellness companion. Respond in 2-3 sentences. Use 1 emoji." },
             { role: "user", content: msg }
           ]
         })
       });
       const data = await res.json();
-      console.log("GROQ:", data);
       const reply = data.choices?.[0]?.message?.content || "I'm here for you 💜";
       setMessages(prev => [...prev, { id: Date.now(), role: "ai", text: reply }]);
     } catch (e) {
-      console.error(e);
       setMessages(prev => [...prev, { id: Date.now(), role: "ai", text: "Error connecting. Try again 💜" }]);
     }
     setTyping(false);
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] p-6 max-w-4xl mx-auto">
+    <div className="flex flex-col h-[calc(100vh-80px)] max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-1">AI Chat</h1>
       <p className="text-muted-foreground text-sm mb-4">Your wellness companion</p>
-
       <div className="flex-1 overflow-y-auto space-y-3 mb-4">
         {messages.map(m => (
           <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[70%] px-4 py-3 rounded-2xl text-sm ${
+            <div className={`max-w-[85%] md:max-w-[70%] px-4 py-3 rounded-2xl text-sm ${
               m.role === "user"
                 ? "bg-primary text-primary-foreground rounded-br-sm"
                 : "bg-card border border-border rounded-bl-sm"
@@ -72,7 +68,6 @@ export default function AIChat() {
         )}
         <div ref={bottomRef} />
       </div>
-
       <div className="flex gap-2">
         <input
           value={input}
@@ -82,7 +77,7 @@ export default function AIChat() {
           className="flex-1 bg-card border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary"
         />
         <button onClick={() => send()}
-          className="bg-primary text-primary-foreground px-5 py-3 rounded-xl text-sm font-medium">
+          className="bg-primary text-primary-foreground px-4 py-3 rounded-xl text-sm font-medium whitespace-nowrap">
           Send
         </button>
       </div>

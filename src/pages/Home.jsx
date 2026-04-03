@@ -52,13 +52,14 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-center py-12 lg:py-20"
+        className="text-center py-8 md:py-12 lg:py-20 px-2"
+
       >
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
           <Sparkles className="w-4 h-4" />
           AI-Powered Wellness
         </div>
-        <h1 className="text-4xl lg:text-6xl font-extrabold tracking-tight text-foreground mb-4">
+        <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold">
           Your Mind,{" "}
           <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Reimagined

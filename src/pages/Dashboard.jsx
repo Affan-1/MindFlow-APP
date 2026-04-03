@@ -32,7 +32,7 @@ const item = {
 
 export default function Dashboard() {
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 max-w-6xl mx-auto">
+    <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl mx-auto space-y-6 p-2 md:p-6">
       {/* Header */}
       <motion.div variants={item}>
         <h1 className="text-2xl font-bold text-foreground">Good afternoon 👋</h1>
